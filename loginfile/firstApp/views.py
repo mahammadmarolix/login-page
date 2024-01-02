@@ -11,26 +11,41 @@ def register_page(request):
         elast_name = request.POST['last_name']
         eemail = request.POST['email']
         epassword = request.POST['password']
-        econfrom_password = request.POST['confrom_password']
+        econfirm_password = request.POST['confirm_password']
 
         a = Login(user_name=euser_name,first_name=efirst_name,last_name=elast_name,email=eemail,password=epassword,confrom_password=econfrom_password)
         a.save()
-        return redirect('login')
+        if econfirm_password != econfirm_password:
+            return HttpResponse("invalid details")
+        else:
+
+            return redirect('login')
+        
     return render(request,'register.html')
 
 
 def login_page(request):
     if request.method == "POST":
-        buser_name = request.POST['user_name']
-        bpassword = request.POST['password']
-        c = auth.authenticate (user_name = buser_name,password = bpassword)
-        if c is not None:
-            auth.login(request.c)
-            # return redirect('home')
+        nuser_name = request.POST['user_name']
+        npassword = request.POST['password']
+        # c = auth.authenticate (user_name = buser_name,password = bpassword)
+        # if c is not None:
+        #     auth.login(request.c)
+        #     # return redirect('home')
         # else:
         #     return HttpResponse("Username or Password  is incorrect!!!!!")
-        return redirect('home')
-    return render(request,'login.html')
+        signup = Login.objects.all()
+        user = None
+        for i in signup:
+            if (i.user_name,i.password) == (nuser_name,npassword):
+                user = i.user_name
+                request.method = ""
+                break
+        if user is not None:
+            return redirect("home")
+        else:
+            return HttpResponse("Invaild Login details")
+    return render(request,"login.html")
 
 
 
